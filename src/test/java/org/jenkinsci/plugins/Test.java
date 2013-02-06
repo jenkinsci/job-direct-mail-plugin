@@ -17,13 +17,14 @@ public class Test extends HudsonTestCase {
         
     }
     
+    /*
     public void testProjectAction() {
         try {
         JobMailProjectAction pa = Hudson.getInstance().getProjects().get(0).getAction(JobMailProjectAction.class);
         assertNotNull(pa);
-        } catch(NullPointerException e ){
+        } catch(NullPointerException e ) {
             assertNull(Hudson.getInstance().getProjects());
         }
-    }
+    }*/
     
 }
