@@ -1,0 +1,68 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
+xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  	
+  	<f:section title="${%title.configtitle}">
+	   <f:block>
+
+	   <f:optionalBlock field="optionBlock" title="Show Templates and Options" checked="false">
+
+	    <f:entry title="${%title.templates}" help="/plugin/jobmail/templates-help.html">
+    		<f:repeatable var="templates" items="${instance.getTemplates()}">
+        		<table width="100%">
+          			
+         			<f:entry title="Email Template">
+         				<f:textbox name="templates.name" value="${templates.getName()}" />
+            			<table width="100%">
+            				<tr>
+            					<td>
+            						<f:textarea name="templates.text" value="${templates.getText()}" />
+          	 					</td>
+          	 				</tr>
+          	 			</table>
+          	 			
+          	 			<table>
+          	 				<tr>
+          	 					<td>
+          	 						Include:
+          	 					</td>
+          	 				</tr>
+          	 				<tr>
+          	 					<td>
+          	 						<f:checkbox name="templates.addProjectName" checked="${templates.isProjectNameEnabled()}"/>Project Name
+          	 					</td>
+          	 				</tr>
+          	 							
+          	 				<tr>
+          	 					<td>
+          	 						<f:checkbox name="templates.addUrl" checked="${templates.isUrlEnabled()}"/>Project/Build Url
+          	 					</td>
+          	 				</tr>
+          	 							
+          	 				<tr>
+          	 					<td>
+          	 						<f:checkbox name="templates.addBuildStatus" checked="${templates.isBuildStatusEnabled()}"/>Build Status
+          	 					</td>
+          	 				</tr>
+          	 			</table>           	 					
+          	 		</f:entry>
+          
+          			<f:entry title="">
+            			<div align="right">
+              				<f:repeatableDeleteButton/>
+            			</div>
+          			</f:entry>
+          
+        		</table>
+      		</f:repeatable>
+		</f:entry>
+
+
+		<f:entry field="signature" title="${%title.signature}" help="/plugin/jobmail/signature-help.html">
+			<f:textarea />
+	 	</f:entry>
+		</f:optionalBlock>
+	 	</f:block>
+
+	</f:section> 
+</j:jelly>
