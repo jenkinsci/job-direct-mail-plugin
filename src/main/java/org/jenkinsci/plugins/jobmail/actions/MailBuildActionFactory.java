@@ -8,6 +8,12 @@ import hudson.model.Action;
 import hudson.model.TransientBuildActionFactory;
 import hudson.model.Run;
 
+/**
+ * Action Factory for the build view.
+ * Adds the "Send Mail" action to every build.
+ * @author yboev
+ *
+ */
 @Extension
 public class MailBuildActionFactory extends TransientBuildActionFactory {
 
@@ -15,6 +21,7 @@ public class MailBuildActionFactory extends TransientBuildActionFactory {
     // private static final Logger LOG =
     // Logger.getLogger(MailProjectActionFactory.class.getName());
 
+    @SuppressWarnings("rawtypes")
     /**
      * {@inheritDoc}
      */

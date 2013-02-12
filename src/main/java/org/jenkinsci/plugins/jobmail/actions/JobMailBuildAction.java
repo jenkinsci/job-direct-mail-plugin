@@ -6,10 +6,24 @@ import org.jenkinsci.plugins.jobmail.utils.Constants;
 import hudson.model.Build;
 import hudson.model.Run;
 
+/**
+ * Implaments the action visible from a build view.
+ * Adds and overrides a few methods from the {@code}JobMailProjectAction.
+ * @author yboev
+ *
+ */
 public class JobMailBuildAction extends JobMailProjectAction {
-
+    
+    /**
+     * The current build.
+     */
     Build<?, ?> build;
-
+    
+    /**
+     * Constructor method.
+     * @param build
+     *          build for which the action is constructed.
+     */
     public JobMailBuildAction(Run<?, ?> build) {
         super(((Build<?, ?>) build).getProject());
         this.build = (Build<?, ?>) build;
@@ -51,19 +65,35 @@ public class JobMailBuildAction extends JobMailProjectAction {
     protected String getRedirectUrl() {
         return this.getBuildUrl();
     }
-
+    
+    /**
+     * Returns the build number.
+     * @return
+     *      build number as string
+     */
     private String getBuildNumber() {
         return this.build.getNumber() + "";
 
     }
 
+    /**
+     * Returns the build result
+     * @return
+     *      build result as string
+     */
     private String getBuildResult() {
         if (this.build != null) {
             return this.build.getResult().toString();
         }
         return Constants.NA;
     }
-
+    
+    /**
+     * Returns the build url.
+     * @return
+     *      build url as string
+     */
+    @SuppressWarnings("deprecation")
     private String getBuildUrl() {
         if (this.build.getProject() != null) {
             return this.build.getProject().getAbsoluteUrl()

@@ -38,19 +38,54 @@ import hudson.scm.ChangeLogSet.Entry;
 import hudson.tasks.Mailer;
 import hudson.util.RunList;
 
+/**
+ * Implements the mail action visible from the project view. contains most of
+ * the methods for creating the email and setting its properties.
+ * 
+ * @author yboev
+ * 
+ */
 public class JobMailProjectAction extends JobMailBaseAction {
 
+    /**
+     * Logger
+     */
     private static final Logger LOGGER = Logger
             .getLogger(JobMailProjectAction.class.getName());
+    /**
+     * The current project.
+     */
     private AbstractProject<?, ?> project;
+
+    /**
+     * This is used to obtain values or call methods implemented in the
+     * ext-mailer-plugin for Jenkins.
+     */
     private ExtendedEmailPublisherDescriptor extMailDescriptor;
+
+    /**
+     * The global configuration
+     */
     protected JobMailGlobalConfiguration conf;
 
+    /**
+     * Constructor method.
+     * 
+     * @param project
+     *            project for which the action is being created
+     */
     public JobMailProjectAction(AbstractProject<?, ?> project) {
         this.project = project;
         this.extMailDescriptor = new ExtendedEmailPublisherDescriptor();
     }
 
+    /**
+     * Returns the from propery of the email as a String. This is the current
+     * user(if logged in) or the admin's email address otherwise.
+     * 
+     * @return
+     * @throws AddressException
+     */
     public String getFromProperty() throws AddressException {
         if (this.getUserEmail(User.current()) != Constants.EMAIL_USER_ERROR) {
             return this.getUserEmail(User.current());
@@ -66,9 +101,13 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @param rsp
      *            response
      * @throws IOException
+     *             Input/output problem
      * @throws ServletException
+     *             servlet problem
      * @throws MessagingException
+     *             Messaging problem
      * @throws InterruptedException
+     *             Interrupt
      */
     public void doConfigSubmit(StaplerRequest req, StaplerResponse rsp)
             throws IOException, ServletException, MessagingException,
@@ -78,15 +117,33 @@ public class JobMailProjectAction extends JobMailBaseAction {
         rsp.sendRedirect(this.getRedirectUrl());
     }
 
+    /**
+     * Initialize method, loads the configuration. Called in the jelly, every
+     * time the action is clicked.
+     */
     public void init() {
         this.conf = JobMailGlobalConfiguration.get();
     }
 
+    /**
+     * Returns the default subject for the email.
+     * 
+     * @return default subject as string
+     * @throws java.io.IOException
+     *             Input/output
+     * @throws java.lang.InterruptedException
+     *             Interrupt
+     */
     public String getDefaultSubject() throws java.io.IOException,
             java.lang.InterruptedException {
         return this.getProjectName();
     }
 
+    /**
+     * Returns the default recipients.
+     * 
+     * @return default recipients as String.
+     */
     public String getDefaultRecipients() {
         if (this.extMailDescriptor != null) {
             return this.extMailDescriptor.getDefaultRecipients();
@@ -94,10 +151,22 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return "";
     }
 
+    /**
+     * Returns all configured templates.
+     * 
+     * @return list of all templates.
+     */
     public List<JobMailGlobalConfiguration.Template> getTemplates() {
         return this.conf.getTemplates();
     }
 
+    /**
+     * Constructs the content part of the email from a template.
+     * 
+     * @param currentTemplate
+     *            the template from which we are constructing text
+     * @return the constructed text as String
+     */
     public String getTemplateText(
             JobMailGlobalConfiguration.Template currentTemplate) {
         String text = "";
@@ -119,10 +188,11 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return text;
     }
 
-    public String getContentFromTemplate(String template) {
-        return template + ":)";
-    }
-
+    /**
+     * Returns the url to which the user is redirected after sending the mail.
+     * 
+     * @return the url as String
+     */
     protected String getRedirectUrl() {
         return this.getProjectUrl();
     }
@@ -134,9 +204,21 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * return Mailer.descriptor().getSmtpServer(); } return "no SmtpServer"; }
      */
 
+    /**
+     * Sends the created email.
+     * 
+     * @param form
+     *            JSON file containing all info from the email writing page.
+     * @throws MessagingException
+     *             Message problem
+     * @throws IOException
+     *             input/output problem
+     * @throws InterruptedException
+     *             Interrupt
+     */
     private void sendMail(JSONObject form) throws MessagingException,
             IOException, InterruptedException {
-        MimeMessage msg = createMessage(form);
+        final MimeMessage msg = createMessage(form);
         try {
             Transport.send(msg);
             LOGGER.info("EMAIL SENT TO EVERYONE!");
@@ -145,7 +227,20 @@ public class JobMailProjectAction extends JobMailBaseAction {
         }
 
     }
-    
+
+    /**
+     * Creates an email message from the given JSON object.
+     * 
+     * @param form
+     *            the JSON object
+     * @return the MimeMessage
+     * @throws MessagingException
+     *             Message problem
+     * @throws IOException
+     *             input/output problem
+     * @throws InterruptedException
+     *             Interrupt
+     */
     private MimeMessage createMessage(JSONObject form)
             throws MessagingException, IOException, InterruptedException {
         MimeMessage msg = null;
@@ -187,14 +282,33 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return msg;
     }
 
+    /**
+     * Returns the project url.
+     * 
+     * @return the url as String
+     */
     private String getProjectUrl() {
         return this.project.getAbsoluteUrl();
     }
 
+    /**
+     * Return the project name.
+     * 
+     * @return the name as String
+     */
     protected String getProjectName() {
         return this.project.getFullName();
     }
 
+    /**
+     * Creates MimeMessage using the ext-mailer plugin or the Mailer plugin for
+     * jenkins.
+     * 
+     * @param msg
+     *            the MimeMessage to be created.
+     * @return
+     * 
+     */
     private MimeMessage createMimeMessage(MimeMessage msg) {
         if (this.extMailDescriptor.getOverrideGlobalSettings()) {
             msg = new MimeMessage(this.extMailDescriptor.createSession());
@@ -206,8 +320,18 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return msg;
     }
 
+    /**
+     * Returns set of recipients from String of recipients. Also adds the
+     * developers if checked.
+     * 
+     * @param recipients
+     *            Recipients as String
+     * @param addDev
+     *            Should developers be added
+     * @return set of all recipients
+     */
     private Set<InternetAddress> getRecipients(String recipients, boolean addDev) {
-        Set<InternetAddress> rslt = new HashSet<InternetAddress>();
+        final Set<InternetAddress> rslt = new HashSet<InternetAddress>();
         // add manually added recipients
         addManualRecipients(recipients, rslt);
 
@@ -222,6 +346,13 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return rslt;
     }
 
+    /**
+     * Returns the admin email address.
+     * 
+     * @return the email address as String
+     * @throws AddressException
+     */
+    @SuppressWarnings("deprecation")
     private String getAdminEmail() throws AddressException {
         String mailAddress = null;
         if (this.extMailDescriptor.getOverrideGlobalSettings()) {
@@ -237,6 +368,13 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return mailAddress;
     }
 
+    /**
+     * Returns the email address of a given user.
+     * 
+     * @param user
+     *            the user
+     * @return email address for this user as String
+     */
     private String getUserEmail(User user) {
         if (user != null) {
             Mailer.UserProperty mailProperty = user
@@ -298,6 +436,14 @@ public class JobMailProjectAction extends JobMailBaseAction {
         }
     }
 
+    /**
+     * Creates a valid email address from a String
+     * 
+     * @param address
+     *            input address
+     * @return valid output address
+     */
+    @SuppressWarnings("deprecation")
     private String createAddressFromString(String address) {
         // check if user email is configured.
         if (!address.contains("@")) {
@@ -305,16 +451,23 @@ public class JobMailProjectAction extends JobMailBaseAction {
         }
 
         if (address.startsWith("cc:")) {
-            address = address.substring(3);
+            address = address.substring("cc:".length());
         }
 
         return address;
     }
 
+    /**
+     * Adds the last committers to the set of recipients.
+     * 
+     * @param rslt
+     *            set with the recipients
+     */
+    @SuppressWarnings("deprecation")
     private void addLastCommitters(Set<InternetAddress> rslt) {
         if (this.project != null && this.project.getLastBuild() != null) {
-            Set<User> users = new HashSet<User>();
-            RunList<AbstractBuild<?, ?>> allBuilds = getAllBuilds();
+            final Set<User> users = new HashSet<User>();
+            final RunList<AbstractBuild<?, ?>> allBuilds = getAllBuilds();
             ChangeLogSet<? extends Entry> changes = null;
             int count = allBuilds.size() - 1;
             while ((changes == null || changes.isEmptySet()) && count >= 0) {
@@ -330,13 +483,26 @@ public class JobMailProjectAction extends JobMailBaseAction {
         }
     }
 
+    /**
+     * Returns all build for this project.
+     * 
+     * @return list of all builds
+     */
     @SuppressWarnings("unchecked")
     private RunList<AbstractBuild<?, ?>> getAllBuilds() {
         return (RunList<AbstractBuild<?, ?>>) this.project.getBuilds();
     }
 
+    /**
+     * Adds a user to the set of recipients.
+     * 
+     * @param rslt
+     *            the set of recipients.
+     * @param user
+     *            the user, who's email is to be added to the set
+     */
     private void addUserToRecipientsSet(Set<InternetAddress> rslt, User user) {
-        String email = this.getUserEmail(user);
+        final String email = this.getUserEmail(user);
         if (email != null && email != Constants.EMAIL_USER_ERROR) {
             try {
                 rslt.add(new InternetAddress(email));

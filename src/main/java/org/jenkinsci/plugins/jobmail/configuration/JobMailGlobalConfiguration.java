@@ -54,7 +54,7 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
         this.signature = signature;
         this.templates = templates;
     }
-    
+
     @Override
     public boolean configure(StaplerRequest req, JSONObject json)
             throws FormException {
@@ -68,20 +68,20 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
         }
         return true;
     }
-    
+
     /**
      * Returns the signature.
-     * @return 
-     *      signature as String.
+     * 
+     * @return signature as String.
      */
     public String getSignature() {
         return this.signature;
     }
-    
+
     /**
-     * Returns all templates
-     * @return
-     *      list of templates
+     * Returns all templates.
+     * 
+     * @return list of templates
      */
     public List<Template> getTemplates() {
         return this.templates;
@@ -103,44 +103,45 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
      * 
      */
     public static class Template {
-        
+
         /**
          * Name of the template, given by the user.
          */
         private String name;
-        
+
         /**
          * Text of the template as String.
          */
         private String text;
-        
+
         /**
          * Should project name be added automatically to this current template.
          */
         private boolean addProjectName = true;
-        
+
         /**
          * Should url be added automatically to this current template.
          */
         private boolean addUrl = true;
-        
+
         /**
          * Should build status be added automatically to this current template.
          */
         private boolean addBuildStatus = true;
-        
+
         /**
          * Databound constructor for populating with values.
+         * 
          * @param name
-         *          The name of the template 
+         *            The name of the template
          * @param text
-         *          Content(text) of the template
+         *            Content(text) of the template
          * @param addProjectName
-         *          Should project name be added to the template
+         *            Should project name be added to the template
          * @param addUrl
-         *          Shoul url be added to the template
+         *            Shoul url be added to the template
          * @param addBuildStatus
-         *          Should build status be added to the tempalate
+         *            Should build status be added to the tempalate
          */
         @DataBoundConstructor
         public Template(String name, String text, boolean addProjectName,
@@ -151,23 +152,48 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
             this.addProjectName = addProjectName;
             this.addBuildStatus = addBuildStatus;
         }
-        
+
+        /**
+         * Return the text for this text.
+         * 
+         * @return the text as String
+         */
         public String getText() {
             return this.text;
         }
 
+        /**
+         * Returns the name of the template.
+         * 
+         * @return the name as String
+         */
         public String getName() {
             return this.name;
         }
 
+        /**
+         * Checks if the project name should be included automatically.
+         * 
+         * @return true if the project name should be included, false otherwise
+         */
         public boolean isProjectNameEnabled() {
             return this.addProjectName;
         }
 
+        /**
+         * Checks if url should be included automatically.
+         * 
+         * @return true if the url should be included, false otherwise
+         */
         public boolean isUrlEnabled() {
             return this.addUrl;
         }
 
+        /**
+         * Checks if build status should be included automatically.
+         * 
+         * @return true if the build status should be included, false otherwise
+         */
         public boolean isBuildStatusEnabled() {
             return this.addBuildStatus;
         }
