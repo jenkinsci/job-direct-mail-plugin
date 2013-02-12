@@ -17,7 +17,7 @@ public class JobMailBuildAction extends JobMailProjectAction {
     /**
      * The current build.
      */
-    Build<?, ?> build;
+    private Build<?, ?> build;
     
     /**
      * Constructor method.
@@ -77,7 +77,7 @@ public class JobMailBuildAction extends JobMailProjectAction {
     }
 
     /**
-     * Returns the build result
+     * Returns the build result.
      * @return
      *      build result as string
      */

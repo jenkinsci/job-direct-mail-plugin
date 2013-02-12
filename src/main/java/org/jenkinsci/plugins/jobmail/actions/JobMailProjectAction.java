@@ -48,7 +48,7 @@ import hudson.util.RunList;
 public class JobMailProjectAction extends JobMailBaseAction {
 
     /**
-     * Logger
+     * Logger.
      */
     private static final Logger LOGGER = Logger
             .getLogger(JobMailProjectAction.class.getName());
@@ -64,7 +64,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
     private ExtendedEmailPublisherDescriptor extMailDescriptor;
 
     /**
-     * The global configuration
+     * The global configuration.
      */
     protected JobMailGlobalConfiguration conf;
 
@@ -83,11 +83,12 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * Returns the from propery of the email as a String. This is the current
      * user(if logged in) or the admin's email address otherwise.
      * 
-     * @return
+     * @return property as String
      * @throws AddressException
+     *             Address problem
      */
     public String getFromProperty() throws AddressException {
-        if (this.getUserEmail(User.current()) != Constants.EMAIL_USER_ERROR) {
+        if (!this.getUserEmail(User.current()).equals(Constants.EMAIL_USER_ERROR)) {
             return this.getUserEmail(User.current());
         }
         return this.getAdminEmail();
@@ -112,7 +113,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
     public void doConfigSubmit(StaplerRequest req, StaplerResponse rsp)
             throws IOException, ServletException, MessagingException,
             InterruptedException {
-        JSONObject form = req.getSubmittedForm();
+        final JSONObject form = req.getSubmittedForm();
         this.sendMail(form);
         rsp.sendRedirect(this.getRedirectUrl());
     }
@@ -262,18 +263,18 @@ public class JobMailProjectAction extends JobMailBaseAction {
         msg.setHeader("Precedence", "bulk");
 
         // set body and eventual attachments
-        Multipart multiPart = new MimeMultipart();
+        final Multipart multiPart = new MimeMultipart();
 
-        MimeBodyPart msgBodyPart = new MimeBodyPart();
-        String text = form.getString("content");
+        final MimeBodyPart msgBodyPart = new MimeBodyPart();
+        final String text = form.getString("content");
 
         msgBodyPart.setContent(text, "text/plain");
         multiPart.addBodyPart(msgBodyPart);
         msg.setContent(multiPart);
 
         // add recipients added manually
-        Set<InternetAddress> restRecipients = getRecipients(
-                form.getString("to"), (form.getString("addDev") == "true"));
+        final Set<InternetAddress> restRecipients = getRecipients(
+                form.getString("to"), (form.getString("addDev").equals("true")));
         msg.setRecipients(Message.RecipientType.TO, restRecipients
                 .toArray(new InternetAddress[restRecipients.size()]));
         for (InternetAddress ia : restRecipients) {
@@ -306,7 +307,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * 
      * @param msg
      *            the MimeMessage to be created.
-     * @return
+     * @return mimemessage
      * 
      */
     private MimeMessage createMimeMessage(MimeMessage msg) {
@@ -351,6 +352,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * 
      * @return the email address as String
      * @throws AddressException
+     *             address problem
      */
     @SuppressWarnings("deprecation")
     private String getAdminEmail() throws AddressException {
@@ -377,7 +379,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     private String getUserEmail(User user) {
         if (user != null) {
-            Mailer.UserProperty mailProperty = user
+            final Mailer.UserProperty mailProperty = user
                     .getProperty(Mailer.UserProperty.class);
             if (mailProperty != null) {
                 return mailProperty.getAddress();
@@ -437,7 +439,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
     }
 
     /**
-     * Creates a valid email address from a String
+     * Creates a valid email address from a String.
      * 
      * @param address
      *            input address
@@ -503,7 +505,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     private void addUserToRecipientsSet(Set<InternetAddress> rslt, User user) {
         final String email = this.getUserEmail(user);
-        if (email != null && email != Constants.EMAIL_USER_ERROR) {
+        if (!email.equals(null) && !email.equals(Constants.EMAIL_USER_ERROR)) {
             try {
                 rslt.add(new InternetAddress(email));
             } catch (AddressException e) {

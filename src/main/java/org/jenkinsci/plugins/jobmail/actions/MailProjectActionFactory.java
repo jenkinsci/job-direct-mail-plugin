@@ -8,6 +8,12 @@ import hudson.model.Action;
 import hudson.model.TransientProjectActionFactory;
 import hudson.model.AbstractProject;
 
+/**
+ * Action Factory for the project view. Adds the "Send Mail" action to every
+ * project.
+ * @author yboev
+ *
+ */
 @Extension
 public class MailProjectActionFactory extends TransientProjectActionFactory {
 
