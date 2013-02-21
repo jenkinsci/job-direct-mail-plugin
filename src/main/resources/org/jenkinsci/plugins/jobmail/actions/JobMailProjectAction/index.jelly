@@ -10,7 +10,7 @@
                      
         	${it.init()}
 
-        	<form action="configSubmit" method="post">
+        	<form action="configSubmit" method="post" name="mailForm">
 	 			
 	 			<table style="margin-top: 30px;">
 	 				<tr>

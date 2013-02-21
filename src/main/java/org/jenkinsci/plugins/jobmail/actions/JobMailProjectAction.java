@@ -312,9 +312,11 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     private MimeMessage createMimeMessage(MimeMessage msg) {
         if (this.extMailDescriptor.getOverrideGlobalSettings()) {
+            LOGGER.info("Creating session with extMail plugin");
             msg = new MimeMessage(this.extMailDescriptor.createSession());
         } else {
             if (Mailer.descriptor() != null) {
+                LOGGER.info("Creating session with Mailer plugin");
                 msg = new MimeMessage(Mailer.descriptor().createSession());
             }
         }
