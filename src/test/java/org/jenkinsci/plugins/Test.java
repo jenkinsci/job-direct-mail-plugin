@@ -147,7 +147,7 @@ public class Test extends HudsonTestCase {
         assertNotNull("Content text field is null!", contentField);
         final String contentString = "Some Random Message Subject";
         contentField.setText(contentString);
-        /*
+        
         final Template t = getNewTemplate();
         JobMailBuildAction a = new JobMailBuildAction(Hudson.getInstance().getProjects().get(0).getLastBuild());
         assertNotNull(a.getTemplateText(t));
@@ -156,7 +156,7 @@ public class Test extends HudsonTestCase {
         } catch (InterruptedException e) {
             Assert.fail();
             e.printStackTrace();
-        }*/
+        }
         
         form.submit();
     }
