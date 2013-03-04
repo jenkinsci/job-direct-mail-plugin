@@ -182,7 +182,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
             text += "\n" + Constants.PROJECT_URL + getProjectUrl();
         }
 
-        if (this.conf.getSignature() != null) {
+        if (this.conf != null && this.conf.getSignature() != null) {
             text += "\n";
             text += "\n" + this.conf.getSignature();
         }

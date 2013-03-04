@@ -2,50 +2,54 @@ package org.jenkinsci.plugins;
 
 import java.io.IOException;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 import org.xml.sax.SAXException;
 
 import hudson.model.Hudson;
-import hudson.model.Job;
-import net.sf.json.JSONObject;
 
 import org.jenkinsci.plugins.jobmail.actions.JobMailBaseAction;
+import org.jenkinsci.plugins.jobmail.actions.JobMailBuildAction;
 import org.jenkinsci.plugins.jobmail.actions.JobMailProjectAction;
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration.Template;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
+import org.junit.Assert;
 import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.HudsonTestCase.WebClient;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 public class Test extends HudsonTestCase {
 
+    /**
+     * Tests the template class.
+     * @throws Exception exception
+     */
     public void testTemplate() throws Exception {
-        Template t = new Template("SampleName", "SampleTextBlaBlaBla", false,
-                false, false);
+        final Template t = getNewTemplate();
+        //final HtmlPage page = new WebClient().goTo("configure");
         assertNotNull(t);
         assertEquals(t.getName(), "SampleName");
         assertEquals(t.getText(), "SampleTextBlaBlaBla");
-        assertEquals(t.isBuildStatusEnabled(), false);
-        assertEquals(t.isProjectNameEnabled(), false);
+        assertEquals(t.isBuildStatusEnabled(), true);
+        assertEquals(t.isProjectNameEnabled(), true);
         assertEquals(t.isUrlEnabled(), false);
 
     }
-
+    
+    /**
+     * Tests a project action.
+     * @throws IOException exception
+     * @throws SAXException exception
+     */
     @LocalData
     public void testProjectAction() throws IOException, SAXException {
 
         addTemplates();
         checkIfJobsAreLoaded();
+        testBaseAction();
 
         final HtmlPage page = new WebClient().goTo("job/test_job/send_mail");
         final String allElements = page.asText();
@@ -62,12 +66,12 @@ public class Test extends HudsonTestCase {
 
         final HtmlTextInput fromField = form.getInputByName("from");
         assertNotNull("From text field is null!", fromField);
-        String fromString = "fromRussiaWithLove@beHappy";
+        final String fromString = "fromRussiaWithLove@beHappy, gfagdfagadfgadf, cc:gfadgafdgfadga";
         fromField.setValueAttribute(fromString);
 
         final HtmlTextInput toField = form.getInputByName("to");
         assertNotNull("To text field is null!", toField);
-        String toString = "notReadingMails@nowhere";
+        final String toString = "notReadingMails@nowhere";
         toField.setValueAttribute(toString);
         
         final HtmlCheckBoxInput addDevField = form.getInputByName("addDev");
@@ -76,25 +80,37 @@ public class Test extends HudsonTestCase {
         
         final HtmlTextInput subjectField = form.getInputByName("subject");
         assertNotNull("Subject text field is null!", subjectField);
-        String subjectString = "Some Random Message Subject";
+        final String subjectString = "Some Random Message Subject";
         subjectField.setValueAttribute(subjectString);
         
         final HtmlTextArea contentField = form.getTextAreaByName("content");
         assertNotNull("Content text field is null!", contentField);
-        String contentString = "Some Random Message Subject";
+        final String contentString = "Some Random Message Subject";
         contentField.setText(contentString);
         
-        form.submit();
+        final Template t = getNewTemplate();
+        JobMailProjectAction a = new JobMailProjectAction(Hudson.getInstance().getProjects().get(0));
+        assertNotNull(a.getTemplateText(t));
+        try {
+            assertNotNull(a.getDefaultSubject());
+        } catch (InterruptedException e) {
+            Assert.fail();
+            e.printStackTrace();
+        }
         
-        testBaseAction();
+        form.submit();
     }
     
+    /**
+     * Tests the build action.
+     * @throws IOException exception
+     * @throws SAXException exception
+     */
     @LocalData
     public void testBuildAction() throws IOException, SAXException {
         
         addTemplates();
         checkIfJobsAreLoaded();
-
         final HtmlPage page = new WebClient().goTo("job/test_job/4/send_mail");
         final String allElements = page.asText();
 
@@ -105,17 +121,17 @@ public class Test extends HudsonTestCase {
         assertTrue(allElements.contains("Load Template"));
 
         System.out.println(allElements);
-        HtmlForm form = page.getFormByName("mailForm");
+        final HtmlForm form = page.getFormByName("mailForm");
         assertNotNull("Form in project is null!", form);
 
         final HtmlTextInput fromField = form.getInputByName("from");
         assertNotNull("From text field is null!", fromField);
-        String fromString = "fromRussiaWithLove@beHappy";
+        final String fromString = "fromRussiaWithLove@beHappy";
         fromField.setValueAttribute(fromString);
 
         final HtmlTextInput toField = form.getInputByName("to");
         assertNotNull("To text field is null!", toField);
-        String toString = "notReadingMails@nowhere";
+        final String toString = "notReadingMails@nowhere";
         toField.setValueAttribute(toString);
         
         final HtmlCheckBoxInput addDevField = form.getInputByName("addDev");
@@ -124,19 +140,33 @@ public class Test extends HudsonTestCase {
         
         final HtmlTextInput subjectField = form.getInputByName("subject");
         assertNotNull("Subject text field is null!", subjectField);
-        String subjectString = "Some Random Message Subject";
+        final String subjectString = "Some Random Message Subject";
         subjectField.setValueAttribute(subjectString);
         
         final HtmlTextArea contentField = form.getTextAreaByName("content");
         assertNotNull("Content text field is null!", contentField);
-        String contentString = "Some Random Message Subject";
+        final String contentString = "Some Random Message Subject";
         contentField.setText(contentString);
+        /*
+        final Template t = getNewTemplate();
+        JobMailBuildAction a = new JobMailBuildAction(Hudson.getInstance().getProjects().get(0).getLastBuild());
+        assertNotNull(a.getTemplateText(t));
+        try {
+            assertNotNull(a.getDefaultSubject());
+        } catch (InterruptedException e) {
+            Assert.fail();
+            e.printStackTrace();
+        }*/
         
         form.submit();
-        
-        testBaseAction();
     }
     
+    private Template getNewTemplate() {
+        return new Template("SampleName", "SampleTextBlaBlaBla", true,
+                false, true);
+    }
+    
+    // not ext-mailerblabla.js found.
     private void addTemplates() throws IOException, SAXException {
         /*
         final HtmlPage page = new WebClient().goTo("configure");
@@ -181,9 +211,12 @@ public class Test extends HudsonTestCase {
         assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
                 .getItem("no_change"));
     }
-
+    
+    /**
+     * Tests the base action.
+     */
     public void testBaseAction() {
-        JobMailBaseAction ba = new JobMailBaseAction();
+        final JobMailBaseAction ba = new JobMailBaseAction();
         assertNotNull(ba);
         assertEquals(ba.getDisplayName(), Constants.NAME);
         assertEquals(ba.getIconFileName(), Constants.ICONFILENAME);
