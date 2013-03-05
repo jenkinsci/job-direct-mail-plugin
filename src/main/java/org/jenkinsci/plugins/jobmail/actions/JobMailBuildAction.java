@@ -54,7 +54,7 @@ public class JobMailBuildAction extends JobMailProjectAction {
             text += "\n" + Constants.BUILD_STATUS + getBuildResult();
         }
 
-        if (this.conf.getSignature() != null) {
+        if (this.conf != null && this.conf.getSignature() != null) {
             text += "\n";
             text += "\n" + this.conf.getSignature();
         }
