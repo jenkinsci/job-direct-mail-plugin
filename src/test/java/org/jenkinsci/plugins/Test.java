@@ -10,6 +10,7 @@ import org.jenkinsci.plugins.jobmail.actions.JobMailBaseAction;
 import org.jenkinsci.plugins.jobmail.actions.JobMailBuildAction;
 import org.jenkinsci.plugins.jobmail.actions.JobMailProjectAction;
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration.Template;
+import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 import org.junit.Assert;
 import org.jvnet.hudson.test.HudsonTestCase;
@@ -24,10 +25,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 public class Test extends HudsonTestCase {
 
     /**
-     * Tests the template class.
+     * Tests the global configuration class.
      * @throws Exception exception
      */
-    public void testTemplate() throws Exception {
+    public void testGlobalConfig() throws Exception {
         final Template t = getNewTemplate();
         //final HtmlPage page = new WebClient().goTo("configure");
         assertNotNull(t);
@@ -36,8 +37,12 @@ public class Test extends HudsonTestCase {
         assertEquals(t.isBuildStatusEnabled(), true);
         assertEquals(t.isProjectNameEnabled(), true);
         assertEquals(t.isUrlEnabled(), false);
-
+        JobMailGlobalConfiguration globalConfig = new JobMailGlobalConfiguration("Some signature blabla", null);
+        assertNotNull(globalConfig);
+        assertEquals(globalConfig.getSignature(), "Some signature blabla");
+        assertNull(globalConfig.getTemplates());
     }
+    
     
     /**
      * Tests a project action.
@@ -47,7 +52,6 @@ public class Test extends HudsonTestCase {
     @LocalData
     public void testProjectAction() throws IOException, SAXException {
 
-        addTemplates();
         checkIfJobsAreLoaded();
         testBaseAction();
 
@@ -66,12 +70,12 @@ public class Test extends HudsonTestCase {
 
         final HtmlTextInput fromField = form.getInputByName("from");
         assertNotNull("From text field is null!", fromField);
-        final String fromString = "fromRussiaWithLove@beHappy, gfagdfagadfgadf, cc:gfadgafdgfadga";
+        final String fromString = "fromRussiaWithLove@beHappy";
         fromField.setValueAttribute(fromString);
 
         final HtmlTextInput toField = form.getInputByName("to");
         assertNotNull("To text field is null!", toField);
-        final String toString = "notReadingMails@nowhere";
+        final String toString = "notReadingMails@nowhere, gfagdfagadfgadf, cc:gfadgafdgfadga";
         toField.setValueAttribute(toString);
         
         final HtmlCheckBoxInput addDevField = form.getInputByName("addDev");
@@ -109,7 +113,6 @@ public class Test extends HudsonTestCase {
     @LocalData
     public void testBuildAction() throws IOException, SAXException {
         
-        addTemplates();
         checkIfJobsAreLoaded();
         final HtmlPage page = new WebClient().goTo("job/test_job/4/send_mail");
         final String allElements = page.asText();
@@ -166,9 +169,12 @@ public class Test extends HudsonTestCase {
                 false, true);
     }
     
+    /*
     // not ext-mailerblabla.js found.
+    // Tests in error: 
+    //  testBuildAction(org.jenkinsci.plugins.Test): 404 Not Found for http://localhost:58693/plugin/email-ext/scripts/emailext-behavior.js
+
     private void addTemplates() throws IOException, SAXException {
-        /*
         final HtmlPage page = new WebClient().goTo("configure");
         final String allElements = page.asText();
         
@@ -200,8 +206,8 @@ public class Test extends HudsonTestCase {
                 .getFirstByXPath("//input[@name='" + "templates.addProjectName" + "']");
         assertNotNull("template1AddProjectname is null!", template1AddProjectname);
         template1AddProjectname.setValueAttribute("true");
-        */
     }
+     */
 
     private void checkIfJobsAreLoaded() {
         assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
