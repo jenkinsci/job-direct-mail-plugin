@@ -22,7 +22,7 @@ public final class Constants {
     /**
      * Icon.
      */
-    public static final String ICONFILENAME = "/plugin/jobmail/icons/internet-mail.png";
+    public static final String ICONFILENAME = "/plugin/job-direct-mail/icons/internet-mail.png";
     /**
      * String for email_user_error.
      */
