@@ -31,7 +31,9 @@ import jenkins.model.JenkinsLocationConfiguration;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Hudson;
 import hudson.model.User;
+import hudson.plugins.emailext.ExtendedEmailPublisher;
 import hudson.plugins.emailext.ExtendedEmailPublisherDescriptor;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
@@ -88,7 +90,8 @@ public class JobMailProjectAction extends JobMailBaseAction {
      *             Address problem
      */
     public String getFromProperty() throws AddressException {
-        if (!this.getUserEmail(User.current()).equals(Constants.EMAIL_USER_ERROR)) {
+        if (!this.getUserEmail(User.current()).equals(
+                Constants.EMAIL_USER_ERROR)) {
             return this.getUserEmail(User.current());
         }
         return this.getAdminEmail();
@@ -144,12 +147,22 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * Returns the default recipients.
      * 
      * @return default recipients as String.
+     * @throws IOException
      */
-    public String getDefaultRecipients() {
-        if (this.extMailDescriptor != null) {
-            return this.extMailDescriptor.getDefaultRecipients();
+    public String getDefaultRecipients() throws IOException {
+        String recipients = "";
+        if(this.extMailDescriptor != null) {
+            recipients = this.extMailDescriptor.getDefaultRecipients();
         }
-        return "";
+        try {
+            return recipients
+                    + ","
+                    + this.project.getPublishersList().get(
+                            ExtendedEmailPublisher.class).recipientList;
+        } catch (NullPointerException e) {
+            // values could not be retrieved
+            return recipients;
+        }
     }
 
     /**
@@ -519,20 +532,9 @@ public class JobMailProjectAction extends JobMailBaseAction {
     }
 
     // This method adds the recipients from the ExtMailer plugin
-    /*
-     * private Set<InternetAddress> addRecipientsFromExtMailer() { EnvVars env =
-     * null; try { if (this.project.getLastBuild() != null) { env =
-     * this.project.getLastBuild().getEnvironment(); } else { env = new
-     * EnvVars(); }
-     * 
-     * } catch (Exception e) { // create an empty set of env vars env = new
-     * EnvVars(); } try { return new
-     * EmailRecipientUtils().convertRecipientString(
-     * this.extMailDescriptor.getDefaultRecipients(), env,
-     * EmailRecipientUtils.TO); } catch (AddressException e) {
-     * LOGGER.info("Converting default recipients unsuccessful! :(");
-     * e.printStackTrace(); }
-     * 
-     * return null; }
-     */
+
+    private String addRecipientsFromExtMailer() {
+        return this.extMailDescriptor.getDefaultRecipients();
+    }
+
 }

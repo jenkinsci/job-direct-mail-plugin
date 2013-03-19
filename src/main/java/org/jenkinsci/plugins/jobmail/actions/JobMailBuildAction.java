@@ -7,26 +7,33 @@ import hudson.model.Build;
 import hudson.model.Run;
 
 /**
- * Implaments the action visible from a build view.
- * Adds and overrides a few methods from the {@code}JobMailProjectAction.
+ * Implaments the action visible from a build view. Adds and overrides a few
+ * methods from the {@code}JobMailProjectAction.
+ * 
  * @author yboev
- *
+ * 
  */
 public class JobMailBuildAction extends JobMailProjectAction {
-    
+
     /**
      * The current build.
      */
     private Build<?, ?> build;
-    
+
     /**
      * Constructor method.
+     * 
      * @param build
-     *          build for which the action is constructed.
+     *            build for which the action is constructed.
      */
     public JobMailBuildAction(Run<?, ?> build) {
         super(((Build<?, ?>) build).getProject());
-        this.build = (Build<?, ?>) build;
+        try {
+            this.build = (Build<?, ?>) build;
+        } catch (java.lang.ClassCastException e) {
+            // unabled to cast build
+            this.build = null;
+        }
     }
 
     @Override
@@ -60,16 +67,16 @@ public class JobMailBuildAction extends JobMailProjectAction {
         }
         return text;
     }
-    
+
     @Override
     protected String getRedirectUrl() {
         return this.getBuildUrl();
     }
-    
+
     /**
      * Returns the build number.
-     * @return
-     *      build number as string
+     * 
+     * @return build number as string
      */
     private String getBuildNumber() {
         return this.build.getNumber() + "";
@@ -78,8 +85,8 @@ public class JobMailBuildAction extends JobMailProjectAction {
 
     /**
      * Returns the build result.
-     * @return
-     *      build result as string
+     * 
+     * @return build result as string
      */
     private String getBuildResult() {
         if (this.build != null) {
@@ -87,11 +94,11 @@ public class JobMailBuildAction extends JobMailProjectAction {
         }
         return Constants.NA;
     }
-    
+
     /**
      * Returns the build url.
-     * @return
-     *      build url as string
+     * 
+     * @return build url as string
      */
     @SuppressWarnings("deprecation")
     private String getBuildUrl() {

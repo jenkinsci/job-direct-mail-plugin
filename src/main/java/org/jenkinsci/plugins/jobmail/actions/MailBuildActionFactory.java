@@ -30,15 +30,15 @@ public class MailBuildActionFactory extends TransientBuildActionFactory {
     @Override
     public Collection<? extends Action> createFor(
             @SuppressWarnings("rawtypes") Run build) {
-        final List<JobMailProjectAction> projectActions = build
-                .getActions(JobMailProjectAction.class);
+        final List<JobMailBuildAction> buildActions = build
+                .getActions(JobMailBuildAction.class);
         final ArrayList<Action> actions = new ArrayList<Action>();
-        if (projectActions.isEmpty()) {
+        if (buildActions.isEmpty()) {
             final JobMailBuildAction newAction = new JobMailBuildAction(build);
             actions.add(newAction);
             return actions;
         } else {
-            return projectActions;
+            return buildActions;
         }
     }
 
