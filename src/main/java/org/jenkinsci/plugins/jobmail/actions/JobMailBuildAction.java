@@ -4,6 +4,7 @@ import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 
 import hudson.model.Build;
+import hudson.model.AbstractBuild;
 import hudson.model.Run;
 
 /**
@@ -18,7 +19,7 @@ public class JobMailBuildAction extends JobMailProjectAction {
     /**
      * The current build.
      */
-    private Build<?, ?> build;
+    private AbstractBuild<?, ?> build;
 
     /**
      * Constructor method.
@@ -27,9 +28,10 @@ public class JobMailBuildAction extends JobMailProjectAction {
      *            build for which the action is constructed.
      */
     public JobMailBuildAction(Run<?, ?> build) {
-        super(((Build<?, ?>) build).getProject());
+        super(((AbstractBuild<?, ?>) build).getProject());
+      
         try {
-            this.build = (Build<?, ?>) build;
+            this.build = (AbstractBuild<?, ?>) build;
         } catch (java.lang.ClassCastException e) {
             // unabled to cast build
             this.build = null;

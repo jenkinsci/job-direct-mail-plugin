@@ -16,8 +16,11 @@ import org.junit.Assert;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.recipes.LocalData;
 
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
@@ -53,6 +56,7 @@ public class Test extends HudsonTestCase {
     public void testProjectAction() throws IOException, SAXException {
 
         checkIfJobsAreLoaded();
+        //addTemplates();
         testBaseAction();
 
         final HtmlPage page = new WebClient().goTo("job/test_job/send_mail");
@@ -114,6 +118,7 @@ public class Test extends HudsonTestCase {
     public void testBuildAction() throws IOException, SAXException {
         
         checkIfJobsAreLoaded();
+        //addTemplates();
         final HtmlPage page = new WebClient().goTo("job/test_job/4/send_mail");
         final String allElements = page.asText();
 
@@ -169,15 +174,15 @@ public class Test extends HudsonTestCase {
                 false, true);
     }
     
-    /*
+    
     // not ext-mailerblabla.js found.
     // Tests in error: 
     //  testBuildAction(org.jenkinsci.plugins.Test): 404 Not Found for http://localhost:58693/plugin/email-ext/scripts/emailext-behavior.js
 
+    /*
     private void addTemplates() throws IOException, SAXException {
         final HtmlPage page = new WebClient().goTo("configure");
         final String allElements = page.asText();
-        
         assertTrue(allElements.contains("Send Mail from job or build view"));
         assertTrue(allElements.contains("Show Templates and Options"));
         HtmlForm globalConfigForm = page.getFormByName("config");
@@ -207,7 +212,8 @@ public class Test extends HudsonTestCase {
         assertNotNull("template1AddProjectname is null!", template1AddProjectname);
         template1AddProjectname.setValueAttribute("true");
     }
-     */
+    */
+     
 
     private void checkIfJobsAreLoaded() {
         assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
