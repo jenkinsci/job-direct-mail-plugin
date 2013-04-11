@@ -3,8 +3,10 @@ package org.jenkinsci.plugins.jobmail.actions;
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 
+import hudson.model.AbstractProject;
 import hudson.model.Build;
 import hudson.model.AbstractBuild;
+import hudson.model.Job;
 import hudson.model.Run;
 
 /**
@@ -28,14 +30,8 @@ public class JobMailBuildAction extends JobMailProjectAction {
      *            build for which the action is constructed.
      */
     public JobMailBuildAction(Run<?, ?> build) {
-        super(((AbstractBuild<?, ?>) build).getProject());
-      
-        try {
-            this.build = (AbstractBuild<?, ?>) build;
-        } catch (java.lang.ClassCastException e) {
-            // unabled to cast build
-            this.build = null;
-        }
+        super((AbstractProject<?, ?>) build.getParent());
+        this.build = (AbstractBuild<?, ?>) build;
     }
 
     @Override

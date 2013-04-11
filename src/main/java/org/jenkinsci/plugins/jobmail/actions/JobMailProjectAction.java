@@ -60,12 +60,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
     private AbstractProject<?, ?> project;
 
     /**
-     * This is used to obtain values or call methods implemented in the
-     * ext-mailer-plugin for Jenkins.
-     */
-    private ExtendedEmailPublisherDescriptor extMailDescriptor;
-
-    /**
      * The global configuration.
      */
     protected JobMailGlobalConfiguration conf;
@@ -78,7 +72,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     public JobMailProjectAction(AbstractProject<?, ?> project) {
         this.project = project;
-        this.extMailDescriptor = new ExtendedEmailPublisherDescriptor();
     }
 
     /**
@@ -150,19 +143,26 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @throws IOException
      */
     public String getDefaultRecipients() throws IOException {
+        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
         String recipients = "";
-        if(this.extMailDescriptor != null) {
-            recipients = this.extMailDescriptor.getDefaultRecipients();
-        }
         try {
-            return recipients
-                    + ","
-                    + this.project.getPublishersList().get(
-                            ExtendedEmailPublisher.class).recipientList;
+            recipients = project.getPublishersList().get(
+                    ExtendedEmailPublisher.class).recipientList;
         } catch (NullPointerException e) {
-            // values could not be retrieved
-            return recipients;
+            // values could not be retrieved, probably disabled
+            return "";
         }
+        String defRecipients = "";
+        if (extMailDescriptor != null) {
+            defRecipients = extMailDescriptor.getDefaultRecipients();
+        }
+        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(Constants.DEFAULT_RECIPIENTS), defRecipients);
+        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(", ,"), ",");
+        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(",,"), ",");
+        if(recipients.startsWith(",")) {
+            recipients = recipients.substring(1).trim();
+        }
+        return recipients;
     }
 
     /**
@@ -324,9 +324,10 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * 
      */
     private MimeMessage createMimeMessage(MimeMessage msg) {
-        if (this.extMailDescriptor.getOverrideGlobalSettings()) {
+        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        if (extMailDescriptor.getOverrideGlobalSettings()) {
             LOGGER.info("Creating session with extMail plugin");
-            msg = new MimeMessage(this.extMailDescriptor.createSession());
+            msg = new MimeMessage(extMailDescriptor.createSession());
         } else {
             if (Mailer.descriptor() != null) {
                 LOGGER.info("Creating session with Mailer plugin");
@@ -372,8 +373,9 @@ public class JobMailProjectAction extends JobMailBaseAction {
     @SuppressWarnings("deprecation")
     private String getAdminEmail() throws AddressException {
         String mailAddress = null;
-        if (this.extMailDescriptor.getOverrideGlobalSettings()) {
-            mailAddress = this.extMailDescriptor.getAdminAddress();
+        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        if (extMailDescriptor.getOverrideGlobalSettings()) {
+            mailAddress = extMailDescriptor.getAdminAddress();
         } else {
             if (Mailer.descriptor() != null) {
                 mailAddress = Mailer.descriptor().getAdminAddress();
@@ -402,6 +404,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
             if (Mailer.descriptor() != null) {
                 return user.getId() + Mailer.descriptor().getDefaultSuffix();
             }
+            ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
             if (extMailDescriptor != null) {
                 return user.getId() + extMailDescriptor.getDefaultSuffix();
             }
@@ -530,11 +533,4 @@ public class JobMailProjectAction extends JobMailBaseAction {
             }
         }
     }
-
-    // This method adds the recipients from the ExtMailer plugin
-
-    private String addRecipientsFromExtMailer() {
-        return this.extMailDescriptor.getDefaultRecipients();
-    }
-
 }

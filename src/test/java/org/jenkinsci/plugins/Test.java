@@ -45,6 +45,7 @@ public class Test extends HudsonTestCase {
         assertEquals(globalConfig.getSignature(), "Some signature blabla");
         assertNull(globalConfig.getTemplates());
     }
+   
     
     
     /**

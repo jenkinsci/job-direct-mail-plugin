@@ -6,6 +6,8 @@ import java.util.List;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.TransientBuildActionFactory;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.Run;
 
 /**
@@ -34,8 +36,14 @@ public class MailBuildActionFactory extends TransientBuildActionFactory {
                 .getActions(JobMailBuildAction.class);
         final ArrayList<Action> actions = new ArrayList<Action>();
         if (buildActions.isEmpty()) {
-            final JobMailBuildAction newAction = new JobMailBuildAction(build);
-            actions.add(newAction);
+            // the if makes sure that only builds havin their Jobs instances of
+            // AbstractProject get this action.
+            if (build instanceof AbstractBuild<?, ?>
+                    && build.getParent() instanceof AbstractProject<?, ?>) {
+                final JobMailBuildAction newAction = new JobMailBuildAction(
+                        build);
+                actions.add(newAction);
+            }
             return actions;
         } else {
             return buildActions;

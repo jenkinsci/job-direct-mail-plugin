@@ -51,4 +51,8 @@ public final class Constants {
      * Project url.
      */
     public static final String PROJECT_URL = "Project URL: ";
+    /**
+     * Default recipients pattern
+     */
+    public static final String DEFAULT_RECIPIENTS = "$DEFAULT_RECIPIENTS";
 }
