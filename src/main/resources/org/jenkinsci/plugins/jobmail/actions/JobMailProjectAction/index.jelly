@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <l:layout>
+    <l:layout permission="${app.CONFIGURE}">
         <l:header title='${%Send Mail}'>
         
         </l:header>
@@ -18,7 +18,12 @@
 	 						<font style="font-size: medium;"> ${%From}: </font>
 	 					</td>
 	 					<td colspan="2">
-	 						<input type="text" value="${it.getFromProperty()}" name="from" style="width: 350px" />
+	 						<select name="from">
+	 							<f:option value="${it.getCurrentUserEmail()}" selected="true"> ${it.getCurrentUserEmail()} </f:option>
+          						<j:if test="${h.hasPermission(app.ADMINISTER)}">
+									<f:option value="${it.getAdminEmail()}" selected="false"> ${it.getAdminEmail()} </f:option>
+								</j:if>							
+          					</select>
 	 					</td>
 	 				</tr>
 	 				<tr>

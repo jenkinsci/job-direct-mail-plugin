@@ -31,7 +31,6 @@ import jenkins.model.JenkinsLocationConfiguration;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
 import hudson.model.User;
 import hudson.plugins.emailext.ExtendedEmailPublisher;
 import hudson.plugins.emailext.ExtendedEmailPublisherDescriptor;
@@ -82,12 +81,22 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @throws AddressException
      *             Address problem
      */
-    public String getFromProperty() throws AddressException {
-        if (!this.getUserEmail(User.current()).equals(
-                Constants.EMAIL_USER_ERROR)) {
-            return this.getUserEmail(User.current());
-        }
-        return this.getAdminEmail();
+    // public String getFromProperty() throws AddressException {
+    // if (!this.getUserEmail(User.current()).equals(
+    // Constants.EMAIL_USER_ERROR)) {
+    // return this.getUserEmail(User.current());
+    // }
+    // return this.getAdminEmail();
+    // }
+
+    /**
+     * Returns the email address of the current user or an appropriate error
+     * message(defined under Constants.EMAIL_USER_ERROR).
+     * 
+     * @return the email or the error message
+     */
+    public String getCurrentUserEmail() {
+        return this.getUserEmail(User.current());
     }
 
     /**
@@ -156,10 +165,14 @@ public class JobMailProjectAction extends JobMailBaseAction {
         if (extMailDescriptor != null) {
             defRecipients = extMailDescriptor.getDefaultRecipients();
         }
-        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(Constants.DEFAULT_RECIPIENTS), defRecipients);
-        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(", ,"), ",");
-        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(",,"), ",");
-        if(recipients.startsWith(",")) {
+        recipients = recipients.replaceAll(
+                java.util.regex.Pattern.quote(Constants.DEFAULT_RECIPIENTS),
+                defRecipients);
+        recipients = recipients.replaceAll(
+                java.util.regex.Pattern.quote(", ,"), ",");
+        recipients = recipients.replaceAll(java.util.regex.Pattern.quote(",,"),
+                ",");
+        if (recipients.startsWith(",")) {
             recipients = recipients.substring(1).trim();
         }
         return recipients;
@@ -200,6 +213,25 @@ public class JobMailProjectAction extends JobMailBaseAction {
             text += "\n" + this.conf.getSignature();
         }
         return text;
+    }
+
+    /**
+     * Returns the admin email address.
+     * 
+     * @return the email address as String
+     * @throws AddressException
+     *             address problem
+     */
+    public String getAdminEmail() throws AddressException {
+        String mailAddress = null;
+        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        if (extMailDescriptor.getOverrideGlobalSettings()) {
+            mailAddress = extMailDescriptor.getAdminAddress();
+        }
+        if (mailAddress == null) {
+            mailAddress = JenkinsLocationConfiguration.get().getAdminAddress();
+        }
+        return mailAddress;
     }
 
     /**
@@ -266,7 +298,9 @@ public class JobMailProjectAction extends JobMailBaseAction {
             return null;
         }
         // set from
-        msg.setFrom(new InternetAddress(this.getFromProperty()));
+
+        msg.setFrom(new InternetAddress(form.getString("from").replaceAll(
+                java.util.regex.Pattern.quote(" "), ".")));
         // set date
         msg.setSentDate(new Date());
         // set subject
@@ -325,16 +359,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     private MimeMessage createMimeMessage(MimeMessage msg) {
         ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
-        if (extMailDescriptor.getOverrideGlobalSettings()) {
-            LOGGER.info("Creating session with extMail plugin");
-            msg = new MimeMessage(extMailDescriptor.createSession());
-        } else {
-            if (Mailer.descriptor() != null) {
-                LOGGER.info("Creating session with Mailer plugin");
-                msg = new MimeMessage(Mailer.descriptor().createSession());
-            }
-        }
-        return msg;
+        return new MimeMessage(extMailDescriptor.createSession());
     }
 
     /**
@@ -364,30 +389,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
     }
 
     /**
-     * Returns the admin email address.
-     * 
-     * @return the email address as String
-     * @throws AddressException
-     *             address problem
-     */
-    @SuppressWarnings("deprecation")
-    private String getAdminEmail() throws AddressException {
-        String mailAddress = null;
-        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
-        if (extMailDescriptor.getOverrideGlobalSettings()) {
-            mailAddress = extMailDescriptor.getAdminAddress();
-        } else {
-            if (Mailer.descriptor() != null) {
-                mailAddress = Mailer.descriptor().getAdminAddress();
-            }
-        }
-        if (mailAddress == null) {
-            mailAddress = JenkinsLocationConfiguration.get().getAdminAddress();
-        }
-        return mailAddress;
-    }
-
-    /**
      * Returns the email address of a given user.
      * 
      * @param user
@@ -398,17 +399,14 @@ public class JobMailProjectAction extends JobMailBaseAction {
         if (user != null) {
             final Mailer.UserProperty mailProperty = user
                     .getProperty(Mailer.UserProperty.class);
-            if (mailProperty != null) {
+            if (mailProperty != null && mailProperty.getAddress() != null) {
                 return mailProperty.getAddress();
             }
-            if (Mailer.descriptor() != null) {
-                return user.getId() + Mailer.descriptor().getDefaultSuffix();
-            }
             ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
-            if (extMailDescriptor != null) {
+            if (extMailDescriptor != null
+                    && user.getId() + extMailDescriptor.getDefaultSuffix() != null) {
                 return user.getId() + extMailDescriptor.getDefaultSuffix();
             }
-
         }
         return Constants.EMAIL_USER_ERROR;
     }
@@ -441,41 +439,49 @@ public class JobMailProjectAction extends JobMailBaseAction {
                 Constants.COMMA_SEPARATED_SPLIT_REGEXP);
 
         for (String address : addresses) {
-            if (!StringUtils.isBlank(address)) {
+            if (address != null && !StringUtils.isBlank(address)
+                    && !address.trim().contains(" ")) {
                 address = address.trim();
 
-                address = createAddressFromString(address);
+                // address = createAddressFromString(address);
                 try {
                     rslt.add(new InternetAddress(address));
                 } catch (AddressException e) {
                     LOGGER.info("Could not add user address to set. User address was: "
                             + address);
-                    e.printStackTrace();
                 }
             }
         }
     }
 
     /**
-     * Creates a valid email address from a String.
+     * Creates a valid email address from a String. Removed feature!!!
      * 
      * @param address
      *            input address
      * @return valid output address
      */
-    @SuppressWarnings("deprecation")
-    private String createAddressFromString(String address) {
-        // check if user email is configured.
-        if (!address.contains("@")) {
-            address = getUserEmail(User.get(address, false));
-        }
-
-        if (address.startsWith("cc:")) {
-            address = address.substring("cc:".length());
-        }
-
-        return address;
-    }
+    // @SuppressWarnings("deprecation")
+    // private String createAddressFromString(String address) {
+    // // check if user email is configured.
+    // if (address.startsWith("cc:")) {
+    // address = address.substring("cc:".length());
+    // }
+    // if (!address.contains("@")) {
+    // if (User.getAll().contains(address)
+    // && this.getUserEmail(User.get(address)) != null) {
+    // address = this.getUserEmail(User.get(address));
+    // }
+    //
+    // } else {
+    // ExtendedEmailPublisherDescriptor extMailDescriptor = new
+    // ExtendedEmailPublisherDescriptor();
+    // address = address + "@" + extMailDescriptor.getDefaultSuffix();
+    // }
+    // if(address.sub)
+    //
+    // return address;
+    // }
 
     /**
      * Adds the last committers to the set of recipients.

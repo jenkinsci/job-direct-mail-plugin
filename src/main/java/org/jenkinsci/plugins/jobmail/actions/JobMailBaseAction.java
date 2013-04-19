@@ -2,10 +2,14 @@ package org.jenkinsci.plugins.jobmail.actions;
 
 //import hudson.plugins.emailext.*;
 //import org.jenkins-ci.plugins.*;
+import jenkins.model.Jenkins;
+
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 
 import hudson.model.Action;
 import hudson.model.Actionable;
+import hudson.model.Hudson;
+import hudson.security.Permission;
 
 /**
  * Base action class which other action classes extend. Contains some methods
@@ -25,7 +29,7 @@ public class JobMailBaseAction extends Actionable implements Action {
      * @return the name as String
      */
     public final String getDisplayName() {
-        return Constants.NAME;
+        return this.hasPermission() ? Constants.NAME : null;
     }
 
     /**
@@ -34,7 +38,7 @@ public class JobMailBaseAction extends Actionable implements Action {
      * @return the icon file as String
      */
     public final String getIconFileName() {
-        return Constants.ICONFILENAME;
+        return this.hasPermission() ? Constants.ICONFILENAME : null;
     }
 
     /**
@@ -43,7 +47,7 @@ public class JobMailBaseAction extends Actionable implements Action {
      * @return the url as String
      */
     public String getUrlName() {
-        return Constants.URL;
+        return this.hasPermission() ? Constants.URL : null;
     }
 
     /**
@@ -52,6 +56,16 @@ public class JobMailBaseAction extends Actionable implements Action {
      * @return the url as String
      */
     public String getSearchUrl() {
-        return Constants.URL;
+        return this.hasPermission() ? Constants.URL : null;
     }
+
+    /**
+     * Checks if the user has CONFIGURE permission.
+     * 
+     * @return
+     */
+    private boolean hasPermission() {
+        return Jenkins.getInstance().hasPermission(Permission.CONFIGURE);
+    }
+
 }
