@@ -243,13 +243,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return this.getProjectUrl();
     }
 
-    /*
-     * private String getServer() { if (extMailDescriptor != null ||
-     * extMailDescriptor.getSmtpServer() != null) { return
-     * extMailDescriptor.getSmtpServer(); } if (Mailer.descriptor() != null) {
-     * return Mailer.descriptor().getSmtpServer(); } return "no SmtpServer"; }
-     */
-
     /**
      * Sends the created email.
      * 
@@ -411,17 +404,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
         return Constants.EMAIL_USER_ERROR;
     }
 
-    /*
-     * private void addUserTriggeringTheBuild(Set<InternetAddress> rslt) {
-     * AbstractBuild<?, ?> build = this.project.getLastBuild(); if(build ==
-     * null) { return; } UserIdCause userIdCause =
-     * build.getCause(Cause.UserIdCause.class); if(userIdCause != null) {
-     * LOGGER.info( User.get(userIdCause.getUserId()).toString());
-     * this.addUserToRecipientsSet(rslt, User.get(userIdCause.getUserId())); }
-     * 
-     * }
-     */
-
     /**
      * Adds manually written recipients, the ones standing in TO field.
      * 
@@ -453,35 +435,6 @@ public class JobMailProjectAction extends JobMailBaseAction {
             }
         }
     }
-
-    /**
-     * Creates a valid email address from a String. Removed feature!!!
-     * 
-     * @param address
-     *            input address
-     * @return valid output address
-     */
-    // @SuppressWarnings("deprecation")
-    // private String createAddressFromString(String address) {
-    // // check if user email is configured.
-    // if (address.startsWith("cc:")) {
-    // address = address.substring("cc:".length());
-    // }
-    // if (!address.contains("@")) {
-    // if (User.getAll().contains(address)
-    // && this.getUserEmail(User.get(address)) != null) {
-    // address = this.getUserEmail(User.get(address));
-    // }
-    //
-    // } else {
-    // ExtendedEmailPublisherDescriptor extMailDescriptor = new
-    // ExtendedEmailPublisherDescriptor();
-    // address = address + "@" + extMailDescriptor.getDefaultSuffix();
-    // }
-    // if(address.sub)
-    //
-    // return address;
-    // }
 
     /**
      * Adds the last committers to the set of recipients.

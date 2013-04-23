@@ -7,7 +7,7 @@ xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
 	   <f:optionalBlock field="optionBlock" title="Show Templates and Options" checked="false">
 
-	    <f:entry title="${%title.templates}" help="/plugin/jobmail/templates-help.html">
+	    <f:entry title="${%title.templates}" help="/plugin/job-direct-mail/templates-help.html">
     		<f:repeatable var="templates" items="${instance.getTemplates()}">
         		<table width="100%">
           			
