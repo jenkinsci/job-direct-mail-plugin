@@ -291,28 +291,25 @@ public class JobMailProjectAction extends JobMailBaseAction {
             return null;
         }
         // set from
-
         msg.setFrom(new InternetAddress(form.getString("from").replaceAll(
                 java.util.regex.Pattern.quote(" "), ".")));
         // set date
         msg.setSentDate(new Date());
         // set subject
         msg.setSubject(form.getString("subject"));
-
         // set header
         msg.setHeader("Precedence", "bulk");
-
         // set body and eventual attachments
         final Multipart multiPart = new MimeMultipart();
 
         final MimeBodyPart msgBodyPart = new MimeBodyPart();
         final String text = form.getString("content");
-
-        msgBodyPart.setContent(text, "text/plain");
+        
+        msgBodyPart.setContent(text, "text/plain; charset=UTF-8");
         multiPart.addBodyPart(msgBodyPart);
         msg.setContent(multiPart);
 
-        // add recipients added manually
+        // add recipients
         final Set<InternetAddress> restRecipients = getRecipients(
                 form.getString("to"), (form.getString("addDev").equals("true")));
         msg.setRecipients(Message.RecipientType.TO, restRecipients

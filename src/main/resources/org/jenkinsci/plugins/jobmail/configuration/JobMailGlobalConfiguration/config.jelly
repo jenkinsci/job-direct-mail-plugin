@@ -58,7 +58,7 @@ xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 		</f:entry>
 
 
-		<f:entry field="signature" title="${%title.signature}" help="/plugin/jobmail/signature-help.html">
+		<f:entry field="signature" title="${%title.signature}" help="/plugin/job-direct-mail/signature-help.html">
 			<f:textarea />
 	 	</f:entry>
 		</f:optionalBlock>

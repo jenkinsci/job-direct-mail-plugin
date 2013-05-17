@@ -57,7 +57,9 @@
 	 				
 	 				<tr>
 	 					<td height="200px">
-	 						<textarea id="contentmail" name="content" style="width: 100%; height: 100%;" />
+	 						<textarea id="contentmail" name="content" style="width: 100%; height: 100%;">
+	 							${it.getTemplateText(it.getTemplates().get(0))}
+	 						</textarea>
 	 					</td>
 	 				
 	 				</tr>
@@ -68,10 +70,9 @@
 	 						<font style="font-size: medium;"> ${%Load Template}: </font>
 	 					</td>
 	 					<td >
-	 						<select name="chooseTemplate" onchange="updateText(this);">
-	 							<f:option value="" selected="true"> ${%Empty Template} </f:option>
+	 						<select name="chooseTemplate" onchange="updateText(this);" onselect="updateText(this);">
           						<j:forEach items="${it.getTemplates()}" var="currentTemplate">
-            						<f:option value="${it.getTemplateText(currentTemplate)}" selected="false"> ${currentTemplate.getName()} </f:option>
+            						<f:option value="${it.getTemplateText(currentTemplate)}" > ${currentTemplate.getName()} </f:option>
             					</j:forEach>								
           					</select>
 	 					</td>

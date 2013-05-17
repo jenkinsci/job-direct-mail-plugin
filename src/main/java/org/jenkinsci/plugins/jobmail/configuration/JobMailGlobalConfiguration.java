@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.jobmail.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hudson.Extension;
@@ -46,7 +47,7 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
      * @param signature
      *            the signature value from the config page.
      * @param templates
-     *            the lsit of templates from the config page.
+     *            the list of templates from the config page.
      */
     @DataBoundConstructor
     public JobMailGlobalConfiguration(String signature, List<Template> templates) {
@@ -84,7 +85,18 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
      * @return list of templates
      */
     public List<Template> getTemplates() {
+        if (this.templates == null) {
+            this.templates = new ArrayList<Template>();
+            addDefaultTemplate();
+            save();
+        }
         return this.templates;
+    }
+
+    private void addDefaultTemplate() {
+        Template defaultTemplate = new Template("Default Template",
+                "", true, true, true);
+        this.templates.add(0, defaultTemplate);
     }
 
     /**
@@ -97,7 +109,7 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
     }
 
     /**
-     * Class for handling regular expressions.
+     * Class for handling templates.
      * 
      * @author yboev
      * 
@@ -139,7 +151,7 @@ public class JobMailGlobalConfiguration extends GlobalConfiguration {
          * @param addProjectName
          *            Should project name be added to the template
          * @param addUrl
-         *            Shoul url be added to the template
+         *            should url be added to the template
          * @param addBuildStatus
          *            Should build status be added to the tempalate
          */
