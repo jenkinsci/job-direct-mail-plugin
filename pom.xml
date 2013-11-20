@@ -6,13 +6,13 @@
 		<version>1.509.4</version><!-- which version of Jenkins is this plugin built 
 			against? -->
 	</parent>
+
 	<name> Job Direct Mail Plugin</name>
 	<groupId>org.jenkins-ci.plugins</groupId>
 	<artifactId>job-direct-mail</artifactId>
 	<version>1.6-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
-		artifacts that we need -->
+
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
@@ -46,13 +46,42 @@
 		</developerConnection>
 		<url> https://github.com/jenkinsci/job-direct-mail-plugin</url>
 	</scm>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven-site-plugin.version>3.3 </maven-site-plugin.version>
+		<maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
+		<maven-surefire-report-plugin.version>${maven-surefire-plugin.version}</maven-surefire-report-plugin.version>
+		<maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+		<maven-checkstyle-plugin.version>2.11</maven-checkstyle-plugin.version>
+		<findbugs-maven-plugin.version>2.5.2</findbugs-maven-plugin.version>
+		<cobertura-maven-plugin.version>2.6</cobertura-maven-plugin.version>
+		<maven-pmd-plugin.version>3.0.1</maven-pmd-plugin.version>
+		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+		<maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+		<maven-jxr-plugin.version>2.3</maven-jxr-plugin.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>email-ext</artifactId>
 			<version>2.36</version>
 		</dependency>
+		 <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+			<groupId>org.jenkins-ci</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.6-jenkins-6</version>
+		</dependency>
 	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -73,11 +102,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.3</version>
+				<version>${maven-site-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>jswidgets-plugin-analyze</id>
@@ -121,7 +151,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
 					<show>private</show>
 					<quiet>true</quiet>
@@ -133,11 +163,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>${maven-surefire-report-plugin.version}</version>
@@ -145,7 +170,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>${maven-checkstyle-plugin.version}</version>
 				<configuration>
 					<enableRulesSummary>false</enableRulesSummary>
 					<configLocation>${basedir}/src/conf/checkstyle-ruleset.xml
@@ -155,7 +180,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.7.1</version>
+				<version>${maven-pmd-plugin.version}</version>
 				<configuration>
 					<linkXRef>true</linkXRef>
 					<includeTests>true</includeTests>
@@ -167,7 +192,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.4.0</version>
+				<version>${findbugs-maven-plugin.version}</version>
 				<configuration>
 					<xmlOutput>true</xmlOutput>
 					<threshold>Low</threshold>
@@ -186,11 +211,6 @@
 						<format>html</format>
 					</formats>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jdepend-maven-plugin</artifactId>
-				<version>${jdepend-maven-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

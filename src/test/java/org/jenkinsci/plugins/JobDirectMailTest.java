@@ -62,7 +62,7 @@ public class JobDirectMailTest extends HudsonTestCase {
         final Logger LOGGER = Logger.getLogger(JobMailProjectAction.class
                 .getName());
         checkIfJobsAreLoaded();
-        //addTemplates();
+        // addTemplates();
         testBaseAction();
 
         final HtmlPage page = new WebClient().goTo("job/test_job/send_mail");
@@ -101,7 +101,7 @@ public class JobDirectMailTest extends HudsonTestCase {
     public void testBuildAction() throws IOException, SAXException {
 
         checkIfJobsAreLoaded();
-        //addTemplates();
+        // addTemplates();
         final HtmlPage page = new WebClient().goTo("job/test_job/4/send_mail");
 
         checkElementsAsStrings(page.asText());
@@ -167,7 +167,8 @@ public class JobDirectMailTest extends HudsonTestCase {
     // assertNotNull("template1Text is null!", template1Text);
     // template1Text.setValueAttribute("Some RrRRRrandom text.");
     //
-    // final HtmlTextInput template1AddProjectname = (HtmlTextInput) templates
+    // final HtmlTextInput template1AddProjectname = (HtmlTextInput)
+    // templates
     // .getFirstByXPath("//input[@name='" + "templates.addProjectName"
     // + "']");
     // assertNotNull("template1AddProjectname is null!",
