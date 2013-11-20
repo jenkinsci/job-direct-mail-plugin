@@ -25,7 +25,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
-public class Test extends HudsonTestCase {
+public class JobDirectMailTest extends HudsonTestCase {
 
     /**
      * Tests the global configuration class.
