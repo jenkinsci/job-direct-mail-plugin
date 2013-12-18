@@ -1,12 +1,16 @@
 package org.jenkinsci.plugins;
 
+import hudson.model.AbstractProject;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import jenkins.model.Jenkins;
+
+import org.junit.Rule;
+import org.junit.Test;
 import org.xml.sax.SAXException;
-
-import hudson.model.Hudson;
-
+import static org.junit.Assert.*;
 import org.jenkinsci.plugins.jobmail.actions.JobMailBaseAction;
 import org.jenkinsci.plugins.jobmail.actions.JobMailBuildAction;
 import org.jenkinsci.plugins.jobmail.actions.JobMailProjectAction;
@@ -14,7 +18,7 @@ import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration.Te
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 import org.junit.Assert;
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
@@ -25,14 +29,17 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
-public class JobDirectMailTest extends HudsonTestCase {
-
+public class JobDirectMailTest {
+    @Rule
+    public JenkinsRule jenkinsRule = new JenkinsRule();
+    
     /**
      * Tests the global configuration class.
      * 
      * @throws Exception
      *             exception
      */
+    @Test
     public void testGlobalConfig() throws Exception {
         final Template t = getNewTemplate();
         // final HtmlPage page = new WebClient().goTo("configure");
@@ -58,6 +65,7 @@ public class JobDirectMailTest extends HudsonTestCase {
      *             exception
      */
     @LocalData
+    @Test
     public void testProjectAction() throws IOException, SAXException {
         final Logger LOGGER = Logger.getLogger(JobMailProjectAction.class
                 .getName());
@@ -65,15 +73,14 @@ public class JobDirectMailTest extends HudsonTestCase {
         // addTemplates();
         testBaseAction();
 
-        final HtmlPage page = new WebClient().goTo("job/test_job/send_mail");
+        final HtmlPage page = jenkinsRule.createWebClient().goTo("job/test_job/send_mail");
 
         checkElementsAsStrings(page.asText());
 
         final HtmlForm form = populateForm(page);
 
         final Template t = getNewTemplate();
-        JobMailProjectAction a = new JobMailProjectAction(Hudson.getInstance()
-                .getProjects().get(0));
+        JobMailProjectAction a = new JobMailProjectAction( (AbstractProject<?, ?>) Jenkins.getInstance().getAllItems().get(0));
         assertNotNull(a.getTemplateText(t));
         try {
             assertNotNull(a.getDefaultSubject());
@@ -102,15 +109,15 @@ public class JobDirectMailTest extends HudsonTestCase {
 
         checkIfJobsAreLoaded();
         // addTemplates();
-        final HtmlPage page = new WebClient().goTo("job/test_job/4/send_mail");
+        final HtmlPage page = jenkinsRule.createWebClient().goTo("job/test_job/4/send_mail");
 
         checkElementsAsStrings(page.asText());
 
         final HtmlForm form = populateForm(page);
 
         final Template t = getNewTemplate();
-        JobMailBuildAction a = new JobMailBuildAction(Hudson.getInstance()
-                .getProjects().get(0).getLastBuild());
+        JobMailBuildAction a = new JobMailBuildAction(((AbstractProject<?, ?>) Jenkins.getInstance()
+                .getAllItems().get(0)).getLastBuild());
         assertNotNull(a.getTemplateText(t));
         try {
             assertNotNull(a.getDefaultSubject());
@@ -207,11 +214,11 @@ public class JobDirectMailTest extends HudsonTestCase {
     }
 
     private void checkIfJobsAreLoaded() {
-        assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
+        assertNotNull("job missing.. @LocalData problem?", Jenkins.getInstance()
                 .getItem("test_job"));
-        assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
+        assertNotNull("job missing.. @LocalData problem?", Jenkins.getInstance()
                 .getItem("success"));
-        assertNotNull("job missing.. @LocalData problem?", Hudson.getInstance()
+        assertNotNull("job missing.. @LocalData problem?", Jenkins.getInstance()
                 .getItem("no_change"));
     }
 
