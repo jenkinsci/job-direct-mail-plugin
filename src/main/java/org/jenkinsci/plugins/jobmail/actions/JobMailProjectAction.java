@@ -191,7 +191,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @return list of all templates.
      */
     public List<JobMailGlobalConfiguration.Template> getTemplates() {
-        return this.conf.getTemplates();
+        return this.getConfig().getTemplates();
     }
 
     /**
@@ -215,9 +215,9 @@ public class JobMailProjectAction extends JobMailBaseAction {
             text += "\n" + Constants.PROJECT_URL + getProjectUrl();
         }
 
-        if (this.conf != null && this.conf.getSignature() != null) {
+        if (this.getConfig() != null && this.getConfig().getSignature() != null) {
             text += "\n";
-            text += "\n" + this.conf.getSignature();
+            text += "\n" + this.getConfig().getSignature();
         }
         return text;
     }
