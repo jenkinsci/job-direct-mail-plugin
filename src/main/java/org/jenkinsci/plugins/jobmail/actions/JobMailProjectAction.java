@@ -61,7 +61,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
     /**
      * The global configuration.
      */
-    protected JobMailGlobalConfiguration conf;
+    private JobMailGlobalConfiguration conf;
 
     /**
      * Constructor method.
@@ -140,7 +140,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @throws java.lang.InterruptedException
      *             Interrupt
      */
-    public String getDefaultSubject() throws java.io.IOException,
+    public String getDefaultSubject() throws IOException,
             java.lang.InterruptedException {
         return this.getProjectName();
     }
@@ -152,7 +152,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @throws IOException
      */
     public String getDefaultRecipients() throws IOException {
-        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        final ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
         String recipients = "";
         try {
             recipients = project.getPublishersList().get(
@@ -162,9 +162,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
             return "";
         }
         String defRecipients = "";
-        if (extMailDescriptor != null) {
-            defRecipients = extMailDescriptor.getDefaultRecipients();
-        }
+        defRecipients = extMailDescriptor.getDefaultRecipients();
         recipients = recipients.replaceAll(
                 java.util.regex.Pattern.quote(Constants.DEFAULT_RECIPIENTS),
                 defRecipients);
@@ -224,7 +222,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     public String getAdminEmail() throws AddressException {
         String mailAddress = null;
-        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        final ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
         if (extMailDescriptor.getOverrideGlobalSettings()) {
             mailAddress = extMailDescriptor.getAdminAddress();
         }
@@ -284,12 +282,12 @@ public class JobMailProjectAction extends JobMailBaseAction {
             throws MessagingException, IOException, InterruptedException {
         MimeMessage msg = null;
         // create Session
-        msg = createMimeMessage(msg);
+        msg = createMimeMessage();
 
-        if (msg == null) {
-            LOGGER.info(Constants.ERROR_1);
-            return null;
-        }
+        // if (msg == null) {
+        // LOGGER.info(Constants.ERROR_1);
+        // return null;
+        // }
         // set from
         msg.setFrom(new InternetAddress(form.getString("from").replaceAll(
                 java.util.regex.Pattern.quote(" "), ".")));
@@ -304,7 +302,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
 
         final MimeBodyPart msgBodyPart = new MimeBodyPart();
         final String text = form.getString("content");
-        
+
         msgBodyPart.setContent(text, "text/plain; charset=UTF-8");
         multiPart.addBodyPart(msgBodyPart);
         msg.setContent(multiPart);
@@ -347,7 +345,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * @return mimemessage
      * 
      */
-    private MimeMessage createMimeMessage(MimeMessage msg) {
+    private MimeMessage createMimeMessage() {
         ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
         return new MimeMessage(extMailDescriptor.createSession());
     }
@@ -393,8 +391,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
                 return mailProperty.getAddress();
             }
             ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
-            if (extMailDescriptor != null
-                    && user.getId() + extMailDescriptor.getDefaultSuffix() != null) {
+            if (user.getId() + extMailDescriptor.getDefaultSuffix() != null) {
                 return user.getId() + extMailDescriptor.getDefaultSuffix();
             }
         }
