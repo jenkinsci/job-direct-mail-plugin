@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -17,12 +18,10 @@ import org.jenkinsci.plugins.jobmail.actions.JobMailProjectAction;
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration.Template;
 import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
-import org.junit.Assert;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -90,7 +89,7 @@ public class JobDirectMailTest {
         try {
             assertNotNull(a.getDefaultSubject());
         } catch (InterruptedException e) {
-            Assert.fail();
+            fail();
             e.printStackTrace();
         }
         try {
@@ -129,7 +128,7 @@ public class JobDirectMailTest {
         try {
             assertNotNull(a.getDefaultSubject());
         } catch (InterruptedException e) {
-            Assert.fail();
+            fail();
             e.printStackTrace();
         }
 

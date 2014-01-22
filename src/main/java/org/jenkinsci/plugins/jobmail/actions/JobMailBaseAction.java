@@ -8,7 +8,6 @@ import org.jenkinsci.plugins.jobmail.utils.Constants;
 
 import hudson.model.Action;
 import hudson.model.Actionable;
-import hudson.model.Hudson;
 import hudson.security.Permission;
 
 /**
@@ -62,7 +61,7 @@ public class JobMailBaseAction extends Actionable implements Action {
     /**
      * Checks if the user has CONFIGURE permission.
      * 
-     * @return
+     * @return true - user has permission, false - no permission.
      */
     private boolean hasPermission() {
         return Jenkins.getInstance().hasPermission(Permission.CONFIGURE);

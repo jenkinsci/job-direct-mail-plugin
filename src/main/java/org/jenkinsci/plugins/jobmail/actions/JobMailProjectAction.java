@@ -318,7 +318,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
 
         // add recipients
         final Set<InternetAddress> restRecipients = getRecipients(
-                form.getString("to"), (form.getString("addDev").equals("true")));
+                form.getString("to"), "true".equals(form.getString("addDev")));
         msg.setRecipients(Message.RecipientType.TO, restRecipients
                 .toArray(new InternetAddress[restRecipients.size()]));
         for (InternetAddress ia : restRecipients) {
@@ -349,13 +349,11 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * Creates MimeMessage using the ext-mailer plugin or the Mailer plugin for
      * jenkins.
      * 
-     * @param msg
-     *            the MimeMessage to be created.
      * @return mimemessage
      * 
      */
     private MimeMessage createMimeMessage() {
-        ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+        final ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
         return new MimeMessage(extMailDescriptor.createSession());
     }
 
@@ -399,10 +397,8 @@ public class JobMailProjectAction extends JobMailBaseAction {
             if (mailProperty != null && mailProperty.getAddress() != null) {
                 return mailProperty.getAddress();
             }
-            ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
-            if (user.getId() + extMailDescriptor.getDefaultSuffix() != null) {
-                return user.getId() + extMailDescriptor.getDefaultSuffix();
-            }
+            final ExtendedEmailPublisherDescriptor extMailDescriptor = new ExtendedEmailPublisherDescriptor();
+            return user.getId() + extMailDescriptor.getDefaultSuffix();
         }
         return Constants.EMAIL_USER_ERROR;
     }
@@ -485,7 +481,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      */
     private void addUserToRecipientsSet(Set<InternetAddress> rslt, User user) {
         final String email = this.getUserEmail(user);
-        if (!email.equals(null) && !email.equals(Constants.EMAIL_USER_ERROR)) {
+        if (email != null && !Constants.EMAIL_USER_ERROR.equals(email)) {
             try {
                 rslt.add(new InternetAddress(email));
             } catch (AddressException e) {
