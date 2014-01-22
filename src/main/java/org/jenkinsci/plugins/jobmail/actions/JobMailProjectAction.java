@@ -61,7 +61,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
     /**
      * The global configuration.
      */
-    private JobMailGlobalConfiguration conf;
+    private JobMailGlobalConfiguration config;
 
     /**
      * Constructor method.
@@ -88,6 +88,15 @@ public class JobMailProjectAction extends JobMailBaseAction {
     // }
     // return this.getAdminEmail();
     // }
+
+    /**
+     * Getter method.
+     * 
+     * @return the configuration for this action.
+     */
+    public JobMailGlobalConfiguration getConfig() {
+        return config;
+    }
 
     /**
      * Returns the email address of the current user or an appropriate error
@@ -128,7 +137,7 @@ public class JobMailProjectAction extends JobMailBaseAction {
      * time the action is clicked.
      */
     public void init() {
-        this.conf = JobMailGlobalConfiguration.get();
+        this.config = JobMailGlobalConfiguration.get();
     }
 
     /**

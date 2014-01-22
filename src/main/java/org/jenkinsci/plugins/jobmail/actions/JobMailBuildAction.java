@@ -4,9 +4,7 @@ import org.jenkinsci.plugins.jobmail.configuration.JobMailGlobalConfiguration;
 import org.jenkinsci.plugins.jobmail.utils.Constants;
 
 import hudson.model.AbstractProject;
-import hudson.model.Build;
 import hudson.model.AbstractBuild;
-import hudson.model.Job;
 import hudson.model.Run;
 
 /**
@@ -59,9 +57,9 @@ public class JobMailBuildAction extends JobMailProjectAction {
             text += "\n" + Constants.BUILD_STATUS + getBuildResult();
         }
 
-        if (this.conf != null && this.conf.getSignature() != null) {
+        if (this.getConfig() != null && this.getConfig().getSignature() != null) {
             text += "\n";
-            text += "\n" + this.conf.getSignature();
+            text += "\n" + this.getConfig().getSignature();
         }
         return text;
     }
