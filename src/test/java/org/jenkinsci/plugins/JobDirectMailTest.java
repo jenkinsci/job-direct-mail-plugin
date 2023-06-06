@@ -21,15 +21,15 @@ import org.jenkinsci.plugins.jobmail.utils.Constants;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
-import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.html.HtmlCheckBoxInput;
+import org.htmlunit.html.HtmlElement;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlInput;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlSelect;
+import org.htmlunit.html.HtmlTextArea;
+import org.htmlunit.html.HtmlTextInput;
 
 public class JobDirectMailTest {
     @Rule
@@ -162,7 +162,7 @@ public class JobDirectMailTest {
         assertNotNull("GlobalConfigForm is null!", globalConfigForm);
         final HtmlInput ob = globalConfigForm.getInputByName("optionBlock");
         assertNotNull("OptionBlock is null!", ob);
-        ob.setValueAttribute("true");
+        ob.setValue("true");
         final HtmlElement templates = (HtmlElement) globalConfigForm
                 .getByXPath("//tr[td='Text Templates']").get(0);
         assertNotNull("Templates list is null!", templates);
@@ -173,19 +173,19 @@ public class JobDirectMailTest {
         final HtmlTextInput template1Name = (HtmlTextInput) templates
                 .getFirstByXPath("//input[@name='" + "templates.name" + "']");
         assertNotNull("template1Name is null!", template1Name);
-        template1Name.setValueAttribute("TestTemplate");
+        template1Name.setValue("TestTemplate");
 
         final HtmlTextInput template1Text = (HtmlTextInput) templates
                 .getFirstByXPath("//input[@name='" + "templates.text" + "']");
         assertNotNull("template1Text is null!", template1Text);
-        template1Text.setValueAttribute("Some RrRRRrandom text.");
+        template1Text.setValue("Some RrRRRrandom text.");
 
         final HtmlTextInput template1AddProjectname = (HtmlTextInput) templates
                 .getFirstByXPath("//input[@name='" + "templates.addProjectName"
                         + "']");
         assertNotNull("template1AddProjectname is null!",
                 template1AddProjectname);
-        template1AddProjectname.setValueAttribute("true");
+        template1AddProjectname.setValue("true");
     }
 
     private HtmlForm populateForm(final HtmlPage page) {
@@ -200,7 +200,7 @@ public class JobDirectMailTest {
         final HtmlTextInput toField = form.getInputByName("to");
         assertNotNull("To text field is null!", toField);
         final String toString = "notReadingMails@nowhere, notReadingMails@nowhere,gfagdfagadfgadf@blabla, gfadgafdgfadga@glbbgfff";
-        toField.setValueAttribute(toString);
+        toField.setValue(toString);
 
         final HtmlCheckBoxInput addDevField = form.getInputByName("addDev");
         assertNotNull("Add Committers field is null!", addDevField);
@@ -209,7 +209,7 @@ public class JobDirectMailTest {
         final HtmlTextInput subjectField = form.getInputByName("subject");
         assertNotNull("Subject text field is null!", subjectField);
         final String subjectString = "Some Random Message Subject";
-        subjectField.setValueAttribute(subjectString);
+        subjectField.setValue(subjectString);
 
         final HtmlTextArea contentField = form.getTextAreaByName("content");
         assertNotNull("Content text field is null!", contentField);
